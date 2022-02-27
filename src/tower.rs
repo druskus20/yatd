@@ -25,7 +25,7 @@ impl Plugin for TowerPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<TowerAssets>();
         if let Some(desired_state) = self.desired_state {
-            app.add_system_set(SystemSet::on_enter(desired_state).with_system(setup))
+            app //.add_system_set(SystemSet::on_enter(desired_state).with_system(setup))
                 .add_system_set(SystemSet::on_update(desired_state).with_system(aim_towers))
                 .add_system_set(SystemSet::on_exit(desired_state).with_system(destroy));
         } else {
@@ -41,9 +41,9 @@ pub struct TowerAssets {
     pub material: Handle<StandardMaterial>,
 }
 
-fn setup(mut commands: Commands, tower_assets: ResMut<TowerAssets>) {
-    //spawn_tower(&mut commands, Vec3::ZERO, &tower_assets);
-}
+//fn setup(mut commands: Commands, tower_assets: ResMut<TowerAssets>) {
+//    //spawn_tower(&mut commands, Vec3::ZERO, &tower_assets);
+//}
 
 pub fn spawn_tower(commands: &mut Commands, position: Vec3, tower_assets: &ResMut<TowerAssets>) {
     let scale = 1.8;
@@ -74,8 +74,8 @@ pub fn spawn_tower(commands: &mut Commands, position: Vec3, tower_assets: &ResMu
         });
 }
 
-fn aim_towers(time: Res<Time>, mut towers: Query<(&mut Transform), With<TowerCannon>>) {
-    for (mut transform) in (&mut towers).iter_mut() {
+fn aim_towers(time: Res<Time>, mut towers: Query<&mut Transform, With<TowerCannon>>) {
+    for mut transform in (&mut towers).iter_mut() {
         transform.rotate(Quat::from_rotation_y(time.delta_seconds()));
     }
 }
