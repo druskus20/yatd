@@ -51,8 +51,15 @@ impl Plugin for MapPlugin {
     }
 }
 
-fn enable_picking(mut state: ResMut<PickingPluginsState>) {
+fn enable_picking(
+    mut state: ResMut<PickingPluginsState>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+    mut picking_materials: ResMut<
+        MeshButtonMaterials<StandardMaterial, StandardMaterialPickingColors>,
+    >,
+) {
     state.enable_picking = true;
+    picking_materials.pressed = materials.add(Color::rgba(0.0, 0.0, 0.0, 0.0).into());
 }
 
 fn disable_picking(mut state: ResMut<PickingPluginsState>) {
@@ -172,14 +179,15 @@ pub fn print_events(
     mut commands: Commands,
     tower_assets: ResMut<TowerAssets>,
     mut events: EventReader<PickingEvent>,
-    mut query: Query<(&mut Transform, &mut Block)>,
+    mut query: Query<(&mut Transform, &mut Block, &mut Selection)>,
 ) {
     for event in events.iter() {
         match event {
             PickingEvent::Clicked(e) => {
-                if let Ok((transform, mut block)) = query.get_mut(*e) {
+                if let Ok((transform, mut block, mut selection)) = query.get_mut(*e) {
                     if !block.has_tower {
                         spawn_tower_on_block(&mut commands, transform.translation, &tower_assets);
+                        selection.set_selected(false);
                         commands.entity(*e).remove_bundle::<PickableBundle>();
                         block.has_tower = true;
                     }
