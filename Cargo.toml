@@ -1,0 +1,36 @@
+[package]
+name = "yatd"
+description = "Yet Another Tower Defense"
+authors = ["druskus20"]
+repository = "https://github.com/druskus20/yatd"
+license = "MIT"
+version = "0.1.0"
+edition = "2021"
+categories = ["games", "game-development"]
+keywords = ["bevy"]
+exclude = ["assets/**/*", "tools/**/*", ".github/**/*"]
+resolver = "2"
+
+[profile.dev]
+opt-level = 3
+
+[workspace]
+members = ["./"]
+
+[dependencies]
+bevy = { version = "0.6", default-features = false, features = ["dynamic"]}
+
+[patch.crates-io]
+# We can override the bevy version with remote or local versions
+# This method causes less pain to downstream users trying to work off your revisions
+#bevy = { git = "https://github.com/bevyengine/bevy" }
+#bevy = { path = "../bevy" }
+
+
+[lib]
+name = "yatd_lib"
+path = "src/lib.rs"
+
+[[bin]]
+name = "yatd_bin"
+path = "src/main.rs"
