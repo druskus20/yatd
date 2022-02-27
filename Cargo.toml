@@ -19,6 +19,15 @@ members = ["./"]
 
 [dependencies]
 bevy = { version = "0.6", default-features = false, features = ["dynamic"]}
+rand = "0.8.4"
+anyhow = "1.0.51"
+extend = "1.1.2"
+autodefault = "2.0.0"
+smooth-bevy-cameras = "0.2.0"
+bevy-inspector-egui = "0.8.1"
+leafwing-input-manager = "0.2.0"
+bevy_mod_picking = "0.5.4"
+
 
 [patch.crates-io]
 # We can override the bevy version with remote or local versions
