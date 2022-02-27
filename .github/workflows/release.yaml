@@ -7,7 +7,7 @@ on:
 
 env:
   # update with the name of the master binary
-  binary: bevy_github_ci_template
+  binary: yatd
 
 
 jobs:
