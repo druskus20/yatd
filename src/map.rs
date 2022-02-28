@@ -35,6 +35,7 @@ impl Plugin for MapPlugin {
                 CoreStage::PreUpdate,
                 SystemSet::new().with_system(pick_block),
             );
+            // app.add_system_set(SystemSet::on_update(desired_state).with_system(pick_block));
             app.add_system_set(
                 SystemSet::on_enter(desired_state)
                     .with_system(setup)
@@ -42,8 +43,8 @@ impl Plugin for MapPlugin {
             )
             .add_system_set(
                 SystemSet::on_exit(desired_state)
-                    .with_system(destroy)
-                    .with_system(disable_picking),
+                    .with_system(disable_picking)
+                    .with_system(destroy),
             );
         } else {
             panic!("MapPlugin::run_in_state() must be called with a GameState");
@@ -59,7 +60,9 @@ fn enable_picking(
     >,
 ) {
     state.enable_picking = true;
-    picking_materials.pressed = materials.add(Color::rgba(0.0, 0.0, 0.0, 0.0).into());
+    picking_materials.pressed = materials.add(Color::rgba(1.0, 0.0, 0.0, 1.0).into());
+    //    picking_materials.pressed = materials.add(Color::rgba(0.0, 0.0, 0.0, 0.0).into());
+    dbg!(state.enable_picking);
 }
 
 fn disable_picking(mut state: ResMut<PickingPluginsState>) {
@@ -177,18 +180,28 @@ fn spawn_tower_on_block(
 
 pub fn pick_block(
     mut commands: Commands,
+    mut materials: ResMut<Assets<StandardMaterial>>,
     tower_assets: ResMut<TowerAssets>,
     mut events: EventReader<PickingEvent>,
-    mut query: Query<(&mut Transform, &mut Block, &mut Selection)>,
+    mut query: Query<(
+        &mut Transform,
+        &mut Block,
+        &mut Handle<StandardMaterial>,
+        &PickableButton<StandardMaterial>,
+    )>,
 ) {
     for event in events.iter() {
         match event {
             PickingEvent::Clicked(e) => {
-                if let Ok((transform, mut block, mut selection)) = query.get_mut(*e) {
+                if let Ok((transform, mut block, mut material, button)) = query.get_mut(*e) {
                     if !block.has_tower {
-                        spawn_tower_on_block(&mut commands, transform.translation, &tower_assets);
-                        selection.set_selected(false);
+                        //selection.set_selected(false);
+
+                        // TODO: Fix once every block has its own texture
+                        *material = button.initial.clone().unwrap();
+                        *material = materials.add(Color::rgb(0.0, 0.0, 1.0).into());
                         commands.entity(*e).remove_bundle::<PickableBundle>();
+                        spawn_tower_on_block(&mut commands, transform.translation, &tower_assets);
                         block.has_tower = true;
                     }
                 }

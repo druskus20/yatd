@@ -32,6 +32,7 @@ fn main() {
         .add_plugin(yatd_lib::camera::CameraPlugin::run_in_state(
             GameState::Defense,
         ))
+        //.add_plugin(yatd_lib::camera::CameraPlugin::new())
         .add_plugin(yatd_lib::map::MapPlugin::run_in_state(GameState::Defense))
         .add_plugin(yatd_lib::tower::TowerPlugin::run_in_state(
             GameState::Defense,

@@ -2,7 +2,7 @@ use bevy_tweening::{lens::*, *};
 use std::time::Duration;
 
 use crate::game_state::GameState;
-use bevy::prelude::*;
+use bevy::{prelude::*, ui::FocusPolicy};
 
 #[derive(Default)]
 pub struct StartMenuPlugin {
@@ -35,8 +35,13 @@ impl Plugin for StartMenuPlugin {
     }
 }
 
-fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
+fn setup(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+    mut state: ResMut<State<GameState>>,
+) {
     commands.spawn_bundle(UiCameraBundle::default());
+    //.insert(StartMenuEntity {});
 
     let font = asset_server.load("fonts/FiraMono-Regular.ttf");
 
@@ -54,16 +59,23 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                 justify_content: JustifyContent::Center,
                 ..Default::default()
             },
-            color: UiColor(Color::NONE),
+            color: UiColor(Color::rgba(1.0, 0.0, 1.0, 0.5).into()),
             ..Default::default()
         })
+        .insert(StartMenuEntityHIDE {})
         .insert(Name::new("menu"))
-        .insert(Menu {})
         .id();
 
-    for text in &["Continue", "New Game", "Quit"] {
+    let buttons = &[
+        ("Continue", ButtonAction::Continue),
+        ("New Game", ButtonAction::NewGame),
+        ("Quit", ButtonAction::Quit),
+    ];
+
+    for (text, button_action) in buttons {
         commands
             .spawn_bundle(ButtonBundle {
+                focus_policy: FocusPolicy::Pass, // TODO: Remove once 3d picking works
                 node: Node {
                     size: Vec2::new(300., 80.),
                 },
@@ -83,6 +95,8 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
             })
             .insert(Name::new(format!("button:{}", text)))
             .insert(Parent(container))
+            //.insert(StartMenuEntity {})
+            .insert(StartMenuEntityHIDE {})
             .insert(Animator::new(Tween::new(
                 EaseFunction::BounceOut,
                 TweeningType::Once,
@@ -92,43 +106,56 @@ fn setup(mut commands: Commands, asset_server: Res<AssetServer>) {
                     end: Vec3::splat(1.0),
                 },
             )))
+            .insert(button_action.clone())
             .with_children(|parent| {
-                parent.spawn_bundle(TextBundle {
-                    text: Text::with_section(
-                        text.to_string(),
-                        TextStyle {
-                            font: font.clone(),
-                            font_size: 48.0,
-                            color: Color::rgb(0.8, 0.8, 0.8),
-                        },
-                        TextAlignment {
-                            vertical: VerticalAlign::Center,
-                            horizontal: HorizontalAlign::Center,
-                        },
-                    ),
-                    ..Default::default()
-                });
+                parent
+                    .spawn_bundle(TextBundle {
+                        text: Text::with_section(
+                            text.to_string(),
+                            TextStyle {
+                                font: font.clone(),
+                                font_size: 48.0,
+                                color: Color::rgb(0.8, 0.8, 0.8),
+                            },
+                            TextAlignment {
+                                vertical: VerticalAlign::Center,
+                                horizontal: HorizontalAlign::Center,
+                            },
+                        ),
+                        ..Default::default()
+                    })
+                    .insert(StartMenuEntityHIDE {});
             });
     }
+    //state.set(GameState::Defense).unwrap();
 }
 
-fn destroy(mut commands: Commands, query: Query<Entity, With<Menu>>) {
-    commands.entity(query.single()).despawn_recursive();
+fn destroy(
+    mut commands: Commands,
+    query: Query<Entity, With<StartMenuEntity>>,
+    mut hide_query: Query<&mut Style, With<StartMenuEntityHIDE>>,
+) {
+    // TODO Fix 3d picking and just despawn
+    hide_query.for_each_mut(|mut s| {
+        s.display = Display::None;
+    });
+    dbg!("destroy");
+    query.for_each(|e| commands.entity(e).despawn_recursive());
 }
 
 pub fn button_selection(
     mut commands: Commands,
+    mut game_state: ResMut<State<GameState>>,
     mut interaction_query: Query<
-        (&Interaction, &mut UiColor, Entity),
+        (&Interaction, &mut UiColor, &ButtonAction, Entity),
         (Changed<Interaction>, With<Button>),
     >,
-    mut text_query: Query<&mut Text>,
 ) {
-    for (interaction, mut color, entity) in interaction_query.iter_mut() {
+    for (interaction, mut color, button_action, entity) in interaction_query.iter_mut() {
         match *interaction {
             Interaction::Clicked => {
                 *color = Color::rgb(0.3, 0.3, 0.3).into();
-                // button_action.run() // TODO
+                button_action.run(&mut game_state); // TODO
             }
             Interaction::Hovered => {
                 // NOTE: We dont need to remove the Animator afterwards
@@ -151,4 +178,30 @@ pub fn button_selection(
 }
 
 #[derive(Component)]
-struct Menu {}
+struct StartMenuEntity {}
+
+#[derive(Component)]
+struct StartMenuEntityHIDE {}
+
+#[derive(Component, Clone)]
+pub enum ButtonAction {
+    Continue,
+    NewGame,
+    Quit,
+}
+
+impl ButtonAction {
+    fn run(&self, game_state: &mut ResMut<State<GameState>>) {
+        match self {
+            ButtonAction::Continue => {
+                dbg!("Not implemented");
+            }
+            ButtonAction::NewGame => {
+                game_state.set(GameState::Defense).unwrap();
+            }
+            ButtonAction::Quit => {
+                std::process::exit(0);
+            }
+        }
+    }
+}

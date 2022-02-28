@@ -36,10 +36,10 @@ impl Plugin for CameraPlugin {
                 .add_system_set(SystemSet::on_update(desired_state).with_system(camera_controller))
                 .add_system_set(SystemSet::on_exit(desired_state).with_system(destroy));
         } else {
-            panic!("CameraPlugin::run_in_state() must be called with a GameState");
-            //app.add_plugin(InputManagerPlugin::<CameraAction>::default())
-            //    .add_startup_system(setup)
-            //    .add_system(camera_controller);
+            //panic!("CameraPlugin::run_in_state() must be called with a GameState");
+            app.add_plugin(InputManagerPlugin::<CameraAction>::default())
+                .add_startup_system(setup)
+                .add_system(camera_controller);
         }
     }
 }
