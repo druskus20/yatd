@@ -41,10 +41,7 @@ pub struct TowerAssets {
     pub material: Handle<StandardMaterial>,
 }
 
-//fn setup(mut commands: Commands, tower_assets: ResMut<TowerAssets>) {
-//    //spawn_tower(&mut commands, Vec3::ZERO, &tower_assets);
-//}
-
+// TODO: Use GlobalTransform instead
 pub fn spawn_tower(commands: &mut Commands, position: Vec3, tower_assets: &ResMut<TowerAssets>) {
     let scale = 1.8;
     let offset = 3.5;
