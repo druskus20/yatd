@@ -18,7 +18,7 @@ opt-level = 3
 members = ["./"]
 
 [dependencies]
-bevy = { version = "0.6", default-features = false, features = ["dynamic"]}
+bevy = { version = "0.6", default-features = false}
 rand = "0.8.4"
 anyhow = "1.0.51"
 extend = "1.1.2"
@@ -29,6 +29,8 @@ leafwing-input-manager = "0.2.0"
 bevy_mod_picking = "0.5.4"
 bevy_tweening = "0.3.2"
 
+[dev-dependencies]
+bevy = { version = "0.6", default-features = false, features = ["dynamic"]}
 
 [patch.crates-io]
 # We can override the bevy version with remote or local versions
