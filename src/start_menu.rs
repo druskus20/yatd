@@ -35,11 +35,7 @@ impl Plugin for StartMenuPlugin {
     }
 }
 
-fn setup(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-    mut state: ResMut<State<GameState>>,
-) {
+fn setup(mut commands: Commands, asset_server: Res<AssetServer>, state: ResMut<State<GameState>>) {
     commands.spawn_bundle(UiCameraBundle::default());
     //.insert(StartMenuEntity {});
 
@@ -59,7 +55,7 @@ fn setup(
                 justify_content: JustifyContent::Center,
                 ..Default::default()
             },
-            color: UiColor(Color::rgba(1.0, 0.0, 1.0, 0.5).into()),
+            color: Color::rgba(1.0, 0.0, 1.0, 0.5).into(),
             ..Default::default()
         })
         .insert(StartMenuEntityHIDE {})
@@ -143,6 +139,7 @@ fn destroy(
     query.for_each(|e| commands.entity(e).despawn_recursive());
 }
 
+#[allow(clippy::type_complexity)]
 pub fn button_selection(
     mut commands: Commands,
     mut game_state: ResMut<State<GameState>>,

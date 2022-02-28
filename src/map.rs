@@ -191,22 +191,19 @@ pub fn pick_block(
     )>,
 ) {
     for event in events.iter() {
-        match event {
-            PickingEvent::Clicked(e) => {
-                if let Ok((transform, mut block, mut material, button)) = query.get_mut(*e) {
-                    if !block.has_tower {
-                        //selection.set_selected(false);
+        if let PickingEvent::Clicked(e) = event {
+            if let Ok((transform, mut block, mut material, button)) = query.get_mut(*e) {
+                if !block.has_tower {
+                    //selection.set_selected(false);
 
-                        // TODO: Fix once every block has its own texture
-                        *material = button.initial.clone().unwrap();
-                        *material = materials.add(Color::rgb(0.0, 0.0, 1.0).into());
-                        commands.entity(*e).remove_bundle::<PickableBundle>();
-                        spawn_tower_on_block(&mut commands, transform.translation, &tower_assets);
-                        block.has_tower = true;
-                    }
+                    // TODO: Fix once every block has its own texture
+                    *material = button.initial.clone().unwrap();
+                    *material = materials.add(Color::rgb(0.0, 0.0, 1.0).into());
+                    commands.entity(*e).remove_bundle::<PickableBundle>();
+                    spawn_tower_on_block(&mut commands, transform.translation, &tower_assets);
+                    block.has_tower = true;
                 }
             }
-            _ => {}
         }
     }
 }

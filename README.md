@@ -6,6 +6,7 @@ Yet Another Tower Defense
 - [ ] Map expansion
 - [ ] Basic Enemies 
 - [ ] Tower Aim 
+- [ ] Textures and materials
 - [ ] Sounds / Music
 - [ ] ScrollWheel / Mouse motion support
 - [ ] Health Bars / Damage Numbers
