@@ -27,6 +27,7 @@ smooth-bevy-cameras = "0.2.0"
 bevy-inspector-egui = "0.8.1"
 leafwing-input-manager = "0.2.0"
 bevy_mod_picking = "0.5.4"
+bevy_tweening = "0.3.2"
 
 
 [patch.crates-io]

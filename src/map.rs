@@ -33,7 +33,7 @@ impl Plugin for MapPlugin {
             });
             app.add_system_set_to_stage(
                 CoreStage::PreUpdate,
-                SystemSet::new().with_system(print_events),
+                SystemSet::new().with_system(pick_block),
             );
             app.add_system_set(
                 SystemSet::on_enter(desired_state)
@@ -175,7 +175,7 @@ fn spawn_tower_on_block(
     super::tower::spawn_tower(commands, position, tower_assets);
 }
 
-pub fn print_events(
+pub fn pick_block(
     mut commands: Commands,
     tower_assets: ResMut<TowerAssets>,
     mut events: EventReader<PickingEvent>,

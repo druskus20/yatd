@@ -2,8 +2,13 @@ use bevy::{
     diagnostic::{FrameTimeDiagnosticsPlugin, LogDiagnosticsPlugin},
     prelude::*,
 };
+use bevy_inspector_egui::WorldInspectorPlugin;
+use bevy_tweening::TweeningPlugin;
 use smooth_bevy_cameras::LookTransformPlugin;
 use yatd_lib::game_state::GameState;
+
+// Consider using
+// https://github.com/NiklasEi/bevy_asset_loader#:~:text=README.md-,Bevy%20asset%20loader,The%20trait%20can%20be%20derived.
 
 fn main() {
     App::new()
@@ -16,9 +21,14 @@ fn main() {
         .add_plugin(LogDiagnosticsPlugin::default())
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(LookTransformPlugin)
+        .add_plugin(TweeningPlugin) // TODO: Maybe fork to support conditional enabling. Should be ok for now.
+        .add_plugin(WorldInspectorPlugin::new())
         .add_plugin(yatd_lib::game_state::GameStatePlugin)
         .add_startup_system(setup.system())
         .add_startup_system(yatd_lib::env::load_assets)
+        .add_plugin(yatd_lib::start_menu::StartMenuPlugin::run_in_state(
+            GameState::StartMenu,
+        ))
         .add_plugin(yatd_lib::camera::CameraPlugin::run_in_state(
             GameState::Defense,
         ))
