@@ -44,5 +44,5 @@ name = "yatd_lib"
 path = "src/lib.rs"
 
 [[bin]]
-name = "yatd_bin"
+name = "yatd"
 path = "src/main.rs"
